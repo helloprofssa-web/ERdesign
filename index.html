@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f7fb" />
+    <title>ER Studio — Diagrammi E-R</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="ER Studio, pagina iniziale">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>ER <strong>Studio</strong></span>
+        </a>
+        <div class="document-name"><span class="status-dot"></span><span>Modello officina</span><span class="saved-label" id="savedLabel">Salvato</span></div>
+        <div class="top-actions">
+          <button class="button button-quiet" id="resetButton" type="button" title="Ripristina il diagramma di esempio">Ripristina esempio</button>
+          <button class="button button-quiet" id="printButton" type="button">Stampa</button>
+          <button class="button button-primary" id="exportButton" type="button"><span aria-hidden="true">↓</span> Esporta JSON</button>
+          <button class="icon-button" id="importButton" type="button" title="Apri un diagramma JSON" aria-label="Apri un diagramma JSON">↑</button>
+          <input id="importFile" type="file" accept="application/json,.json" hidden />
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="sidebar">
+          <div class="sidebar-heading">
+            <div>
+              <p class="eyebrow">Il tuo progetto</p>
+              <h1>Diagramma E-R</h1>
+            </div>
+            <span class="version-pill">EDITOR</span>
+          </div>
+          <p class="intro">Modella i dati con entità, attributi e relazioni. Trascina ogni ovale per disporre gli attributi liberamente attorno all’entità.</p>
+
+          <div class="create-actions">
+            <button class="create-card" id="addEntityButton" type="button">
+              <span class="create-icon entity-icon" aria-hidden="true">▰</span>
+              <span><strong>Nuova entità</strong><small>Una cosa o un oggetto</small></span>
+              <span class="plus" aria-hidden="true">+</span>
+            </button>
+            <button class="create-card" id="addRelationButton" type="button">
+              <span class="create-icon relation-icon" aria-hidden="true">◇</span>
+              <span><strong>Nuova relazione</strong><small>Collega due entità</small></span>
+              <span class="plus" aria-hidden="true">+</span>
+            </button>
+          </div>
+
+          <section class="inspector" id="inspector" aria-live="polite"></section>
+          <div class="sidebar-foot"><span class="keyboard-hint">Suggerimento</span><p>Seleziona un attributo per evidenziarlo e trascinalo per modificarne la posizione. I sotto-attributi restano collegati al loro attributo composto.</p></div>
+        </aside>
+
+        <section class="canvas-area" aria-label="Area di lavoro del diagramma">
+          <div class="canvas-toolbar">
+            <div class="canvas-title"><span class="canvas-icon" aria-hidden="true">⌘</span><div><strong>Modello concettuale</strong><small>Notazione Chen · <span id="elementCount">0 elementi</span></small></div></div>
+            <div class="canvas-legend"><span><i class="legend-entity"></i> Entità</span><span><i class="legend-relation"></i> Relazione</span><span><i class="legend-attribute"></i> Attributo</span></div>
+          </div>
+          <div class="canvas-scroll" id="canvasScroll">
+            <div class="diagram-canvas" id="diagramCanvas">
+              <svg class="connections" id="connections" viewBox="0 0 1600 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
+              <div class="canvas-watermark">ER STUDIO <span>•</span> DIAGRAMMA CONCETTUALE</div>
+            </div>
+          </div>
+          <div class="canvas-footer"><span><kbd>Trascina</kbd> entità, relazioni e ovali-attributo</span><span>Le modifiche vengono salvate automaticamente</span></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="edit-dialog" id="entityDialog">
+      <form id="entityForm">
+        <div class="dialog-top"><div><p class="eyebrow">Nuovo elemento</p><h2>Crea un’entità</h2></div><button class="dialog-close" type="button" data-close-dialog="entity" aria-label="Chiudi">×</button></div>
+        <label class="field-label" for="entityName">Nome entità</label>
+        <input id="entityName" name="name" maxlength="48" placeholder="Es. CLIENTE" required />
+        <label class="field-label" for="entityAttributes">Attributi <span>2 spazi per i sotto-attributi</span></label>
+        <textarea id="entityAttributes" name="attributes" rows="5" placeholder="Codice&#10;Nome&#10;Indirizzo&#10;  Via&#10;  CAP"></textarea>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog="entity">Annulla</button><button class="button button-primary" id="saveEntityButton" type="submit">Crea entità</button></div>
+      </form>
+    </dialog>
+
+    <dialog class="edit-dialog" id="relationDialog">
+      <form id="relationForm">
+        <div class="dialog-top"><div><p class="eyebrow">Nuovo elemento</p><h2>Crea una relazione</h2></div><button class="dialog-close" type="button" data-close-dialog="relation" aria-label="Chiudi">×</button></div>
+        <label class="field-label" for="relationName">Nome relazione</label>
+        <input id="relationName" name="name" maxlength="48" placeholder="Es. POSSIEDE" required />
+        <div class="relation-endpoints"><span>Entità collegate</span><strong id="relationEndpointsPreview"></strong></div>
+        <div class="relation-pair">
+          <label class="field-label">Cardinalità Diretta<select id="relationCardinalityA"><option>(1,1)</option><option>(0,1)</option><option>(1,N)</option><option>(0,N)</option></select></label>
+          <label class="field-label">Cardinalità Inversa<select id="relationCardinalityB"><option>(1,N)</option><option>(0,N)</option><option>(1,1)</option><option>(0,1)</option></select></label>
+        </div>
+        <label class="field-label" for="relationOverallCardinality">Cardinalità della relazione
+          <select id="relationOverallCardinality"><option>(1,1)</option><option>(1,N)</option><option>(N,N)</option></select>
+        </label>
+        <div class="dialog-actions"><button class="button button-quiet" type="button" data-close-dialog="relation">Annulla</button><button class="button button-primary" id="saveRelationButton" type="submit">Crea relazione</button></div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
