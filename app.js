@@ -1,6 +1,9 @@
 const STORAGE_KEY = "er-studio-diagram-v2";
 const CANVAS_WIDTH = 1600;
 const CANVAS_HEIGHT = 1000;
+const MIN_ZOOM = 0.4;
+const MAX_ZOOM = 1.5;
+const ZOOM_STEP = 0.1;
 
 const esempio = {
   nodes: [
@@ -20,6 +23,8 @@ const esempio = {
 };
 
 const canvas = document.getElementById("diagramCanvas");
+const diagramViewport = document.getElementById("diagramViewport");
+const canvasScroll = document.getElementById("canvasScroll");
 const connections = document.getElementById("connections");
 const inspector = document.getElementById("inspector");
 const entityDialog = document.getElementById("entityDialog");
@@ -33,6 +38,31 @@ let pendingRelationCreation = false;
 let pendingRelationEntityIds = [];
 let relationEndpointsDraft = [];
 let toastTimer;
+let zoom = 1;
+
+function applyZoom() {
+  canvas.style.transform = `scale(${zoom})`;
+  diagramViewport.style.width = `${CANVAS_WIDTH * zoom}px`;
+  diagramViewport.style.height = `${CANVAS_HEIGHT * zoom}px`;
+  document.getElementById("zoomLevel").textContent = `${Math.round(zoom * 100)}%`;
+  document.getElementById("zoomOutButton").disabled = zoom <= MIN_ZOOM;
+  document.getElementById("zoomInButton").disabled = zoom >= MAX_ZOOM;
+}
+
+function changeZoom(amount) {
+  const nextZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.round((zoom + amount) * 10) / 10));
+  if (nextZoom === zoom) return;
+  const ratio = nextZoom / zoom;
+  const centerX = canvasScroll.clientWidth / 2;
+  const centerY = canvasScroll.clientHeight / 2;
+  canvasScroll.scrollLeft = Math.max(0, (canvasScroll.scrollLeft + centerX) * ratio - centerX);
+  canvasScroll.scrollTop = Math.max(0, (canvasScroll.scrollTop + centerY) * ratio - centerY);
+  zoom = nextZoom;
+  applyZoom();
+}
+
+document.getElementById("zoomInButton").addEventListener("click", () => changeZoom(ZOOM_STEP));
+document.getElementById("zoomOutButton").addEventListener("click", () => changeZoom(-ZOOM_STEP));
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => {
   button.addEventListener("click", () => {
@@ -534,8 +564,8 @@ canvas.addEventListener("pointerdown", (event) => {
 });
 canvas.addEventListener("pointermove", (event) => {
   if (!dragState) return;
-  const scaleX = canvas.clientWidth / CANVAS_WIDTH;
-  const scaleY = canvas.clientHeight / CANVAS_HEIGHT;
+  const scaleX = canvas.getBoundingClientRect().width / CANVAS_WIDTH;
+  const scaleY = canvas.getBoundingClientRect().height / CANVAS_HEIGHT;
   if (dragState.kind === "attribute") {
     const nextX = Math.max(0, Math.min(CANVAS_WIDTH - dragState.element.offsetWidth, dragState.originX + (event.clientX - dragState.startX) / scaleX));
     const nextY = Math.max(13, Math.min(CANVAS_HEIGHT - 13, dragState.originY + (event.clientY - dragState.startY) / scaleY));
@@ -627,3 +657,4 @@ document.getElementById("importFile").addEventListener("change", async (event) =
 });
 
 render();
+applyZoom();

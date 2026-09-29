@@ -58,12 +58,19 @@
         <section class="canvas-area" aria-label="Area di lavoro del diagramma">
           <div class="canvas-toolbar">
             <div class="canvas-title"><span class="canvas-icon" aria-hidden="true">⌘</span><div><strong>Modello concettuale</strong><small>Notazione Chen · <span id="elementCount">0 elementi</span></small></div></div>
+            <div class="zoom-controls" aria-label="Controlli zoom del diagramma">
+              <button class="zoom-button" id="zoomOutButton" type="button" aria-label="Riduci zoom" title="Riduci zoom">−</button>
+              <span id="zoomLevel" aria-live="polite">100%</span>
+              <button class="zoom-button" id="zoomInButton" type="button" aria-label="Aumenta zoom" title="Aumenta zoom">+</button>
+            </div>
             <div class="canvas-legend"><span><i class="legend-entity"></i> Entità</span><span><i class="legend-relation"></i> Relazione</span><span><i class="legend-attribute"></i> Attributo</span></div>
           </div>
           <div class="canvas-scroll" id="canvasScroll">
-            <div class="diagram-canvas" id="diagramCanvas">
-              <svg class="connections" id="connections" viewBox="0 0 1600 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
-              <div class="canvas-watermark">ER STUDIO <span>•</span> DIAGRAMMA CONCETTUALE</div>
+            <div class="diagram-viewport" id="diagramViewport">
+              <div class="diagram-canvas" id="diagramCanvas">
+                <svg class="connections" id="connections" viewBox="0 0 1600 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
+                <div class="canvas-watermark">ER STUDIO <span>•</span> DIAGRAMMA CONCETTUALE</div>
+              </div>
             </div>
           </div>
           <div class="canvas-footer"><span><kbd>Trascina</kbd> entità, relazioni e ovali-attributo</span><span>Le modifiche vengono salvate automaticamente</span></div>

@@ -87,6 +87,11 @@ h1, h2, p { margin-top: 0; }
 .canvas-title div { display: grid; gap: 2px; }
 .canvas-title strong { color: #46536a; font-size: 11px; }
 .canvas-title small { color: #a1a9b6; font-size: 9px; }
+.zoom-controls { display: flex; align-items: center; gap: 8px; padding: 4px; border: 1px solid #e9edf3; border-radius: 8px; background: #fbfcfe; }
+.zoom-controls > span { min-width: 38px; color: #687388; font-size: 10px; font-weight: 700; text-align: center; }
+.zoom-button { display: grid; place-items: center; width: 27px; height: 27px; padding: 0; border: 1px solid #e5e8ef; border-radius: 6px; color: #53617a; background: #fff; font-size: 17px; line-height: 1; }
+.zoom-button:hover:not(:disabled) { border-color: #bfc6f4; color: #5869e8; background: #f5f6ff; }
+.zoom-button:disabled { opacity: .45; cursor: not-allowed; }
 .canvas-legend { display: flex; gap: 15px; color: #8993a2; font-size: 9px; }
 .canvas-legend span { display: flex; align-items: center; gap: 6px; }
 .canvas-legend i { display: inline-block; width: 10px; height: 10px; }
@@ -94,7 +99,8 @@ h1, h2, p { margin-top: 0; }
 .legend-relation { border: 1.5px solid #62c197; background: #edfaf3; transform: rotate(45deg) scale(.75); }
 .legend-attribute { width: 8px !important; height: 8px !important; border: 1.5px solid #c3a8da; border-radius: 50%; }
 .canvas-scroll { flex: 1; min-height: 430px; overflow: auto; padding: 25px; }
-.diagram-canvas { position: relative; width: var(--canvas-w); height: var(--canvas-h); overflow: hidden; border: 1px solid #e8ecf2; border-radius: 9px; background-color: #fff; background-image: radial-gradient(#dfe4ed 1px, transparent 1px); background-size: 18px 18px; box-shadow: 0 5px 18px #29334b0b; }
+.diagram-viewport { position: relative; width: 1600px; height: 1000px; }
+.diagram-canvas { position: relative; width: var(--canvas-w); height: var(--canvas-h); overflow: hidden; border: 1px solid #e8ecf2; border-radius: 9px; background-color: #fff; background-image: radial-gradient(#dfe4ed 1px, transparent 1px); background-size: 18px 18px; box-shadow: 0 5px 18px #29334b0b; transform-origin: top left; }
 .connections { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .connector { stroke: #a9b3c4; stroke-width: 1.35; fill: none; }
 .attribute-connector { stroke: #c5b4d5; stroke-width: 1.2; fill: none; }
@@ -158,6 +164,9 @@ kbd { padding: 3px 5px; border: 1px solid #dfe4eb; border-radius: 4px; color: #7
   .sidebar-foot { display: none; }
   .inspector { margin-top: 13px; padding-top: 12px; }
   .canvas-toolbar { padding: 0 12px; }
+  .canvas-title { gap: 6px; }
+  .zoom-controls { gap: 4px; }
+  .zoom-button { width: 25px; height: 25px; }
   .canvas-legend { display: none; }
   .canvas-scroll { min-height: 480px; padding: 12px; }
   .canvas-footer { padding: 0 12px; }
@@ -168,6 +177,7 @@ kbd { padding: 3px 5px; border: 1px solid #dfe4eb; border-radius: 4px; color: #7
   .topbar, .sidebar, .canvas-toolbar, .canvas-footer { display: none !important; }
   .workspace { display: block; }
   .canvas-scroll { overflow: visible; padding: 0; }
-  .diagram-canvas { border: 0; box-shadow: none; transform: scale(.68); transform-origin: top left; margin-bottom: -300px; }
+  .diagram-viewport { width: 1088px !important; height: 680px !important; }
+  .diagram-canvas { border: 0; box-shadow: none; transform: scale(.68) !important; transform-origin: top left; }
   .entity-node, .relation-node { break-inside: avoid; }
 }
